@@ -1,0 +1,517 @@
+/* ==================================== */
+/* 1. RESET BÁSICO E CONFIGURAÇÃO DO LAYOUT PRINCIPAL */
+/* ==================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #ebe1bc; /* Fundo do conteúdo principal: Cinza muito claro */
+    color: #333333; /* Cor do texto principal: Preto suave */
+    height: 100vh;
+    font-size: 0.9rem;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ------------------------------------- */
+/* ESTRUTURA FLEXBOX PARA SIDEBAR + CONTEÚDO */
+/* ------------------------------------- */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.layout .content {
+    /* CHAVE: Garante que o conteúdo ocupe o restante do espaço */
+    flex-grow: 1;
+    /* CHAVE: Adiciona uma margem esquerda para compensar a largura MÍNIMA do sidebar fixo */
+    margin-left: 260px; /* Largura padrão do sidebar (260px) */
+    
+    /* ⬇️ AJUSTE 1: Diminuído o padding lateral */
+    padding: 30px 60px; 
+    
+    transition: margin-left 0.3s ease; 
+}
+
+/* Ajusta o conteúdo quando o sidebar está colapsado (80px) */
+.layout .sidebar.collapsed ~ .content {
+    margin-left: 80px;
+}
+
+/* Ajusta o conteúdo em telas menores, pois o sidebar está em `position: fixed` e não afeta o fluxo */
+@media (max-width: 900px) {
+    .layout .content {
+        margin-left: 0; 
+        padding: 20px; 
+    }
+}
+
+/* ==================================== */
+/* 2. ESTILOS DO NOVO CABEÇALHO (DENTRO DE .content) */
+/* ==================================== */
+
+header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    
+    /* ⬇️ AJUSTE 2: Diminuído o padding-bottom (espaço abaixo do header) */
+    padding: 10px 0 40px 0; 
+}
+
+.logo {
+    font-weight: bold;
+    color: #C5A300; /* Dourado Escuro para o logo no conteúdo */
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+/* ==================================== */
+/* 3. ESTILOS DO SIDEBAR (MENU LATERAL) - PRETO E DOURADO */
+/* ==================================== */
+
+.sidebar {
+    color: #E0E0E0; /* Cor do texto dos ícones e títulos (Cinza muito claro) */
+    overflow-x: hidden !important;
+    position: fixed; 
+    width: 260px;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background-color: #111111; /* Fundo principal: PRETO ESCURO */
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+/* --- Estilos Mobile (Ocultar e Mostrar com 'toggled') --- */
+@media (max-width: 900px) {
+    .sidebar {
+        left: -260px; 
+    }
+    .sidebar.toggled {
+        left: 0; 
+    }
+}
+
+/* --- Estrutura Interna do Sidebar --- */
+
+.sidebar .sidebar-layout {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .sidebar-layout .sidebar-header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.layout .sidebar .pro-sidebar-logo {
+    display: flex;
+    align-items: center;
+    color: #B8860B; /* Dourado Profundo para o título principal no sidebar */
+}
+.layout .sidebar .pro-sidebar-logo div {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.layout .sidebar .pro-sidebar-logo h5 {
+    font-weight: 500;
+    margin: 0;
+}
+
+.sidebar-collapser {
+    text-align: right;
+    padding: 0 20px;
+    cursor: pointer;
+    color: #B8860B; /* Dourado Profundo para o ícone de colapso */
+    font-size: 1.2rem;
+    line-height: 50px;
+}
+
+.sidebar-footer {
+    padding: 20px;
+}
+
+.footer-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px solid rgba(184, 134, 11, 0.15); /* Borda sutil dourada (DarkGoldenrod) */
+}
+
+.footer-box a {
+    color: #B8860B; /* Dourado Profundo */
+    font-weight: bold;
+}
+
+.react-logo {
+    width: 20px;
+    height: 20px;
+}
+
+/* Garante que o footer e o texto do header desapareçam no modo colapsado */
+.layout .sidebar.collapsed .sidebar-header h5,
+.layout .sidebar.collapsed .sidebar-footer { 
+    display: none; 
+}
+.layout .sidebar.collapsed .sidebar-header {
+    justify-content: center;
+}
+.layout .sidebar.collapsed .pro-sidebar-logo {
+    justify-content: center;
+    width: 100%; 
+}
+
+/* --- Estilos do Menu de Navegação --- */
+
+.layout .sidebar .menu {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+}
+
+.layout .sidebar .menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.layout .sidebar .menu .menu-header {
+    font-weight: 600;
+    padding: 10px 25px;
+    font-size: 0.8em;
+    letter-spacing: 2px;
+    opacity: 0.6; 
+    transition: opacity 0.3s;
+    color: #B3B3B3; /* Cinza claro suave */
+}
+
+/* Garante que o menu desapareça no modo colapsado */
+.layout .sidebar.collapsed .menu > ul > .menu-header {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.layout .sidebar .menu .menu-item a {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 20px;
+    color: #E0E0E0; /* Cor do link (Cinza muito claro) */
+    text-decoration: none;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.layout .sidebar .menu .menu-item a:hover {
+    color: #B8860B; /* Dourado Profundo no hover */
+    background-color: rgba(170, 132, 61, 0.1); /* Fundo sutil bronze no hover */
+}
+
+.layout .sidebar .menu .menu-item.active a {
+    color: #B8860B; /* Dourado Profundo para o item ativo */
+    background-color: rgba(170, 132, 61, 0.2); /* Fundo mais forte bronze para o ativo */
+}
+
+.layout .sidebar .menu .menu-icon {
+    font-size: 1.2rem;
+    width: 30px;
+    min-width: 30px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.layout .sidebar.collapsed .menu-title,
+.layout .sidebar.collapsed .menu-suffix {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.3s, width 0.3s;
+}
+
+/* Submenus */
+.layout .sidebar .menu .menu-item.sub-menu .sub-menu-list {
+    background-color: rgba(0, 0, 0, 0.4); /* Fundo do submenu mais escuro */
+    padding: 10px 0;
+    display: none; 
+}
+
+.layout .sidebar .menu .menu-item.sub-menu .sub-menu-list a {
+    height: 40px;
+    padding-left: 55px;
+}
+
+/* Estilos de badge */
+.badge.primary {
+    background-color: #C5A300; /* DOURADO ESCURO (Badge) */
+    color: #111111; /* Preto para contraste */
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    margin-left: auto;
+}
+
+/* ==================================== */
+/* 4. ESTILOS DO CONTEÚDO PRINCIPAL (Sections, Cards e Botões) */
+/* ==================================== */
+
+/* --- Seção Principal (Hero) --- */
+.main-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    
+    /* ✅ AJUSTE CORRIGIDO: Aumentado o padding-bottom para ABAIXAR a linha. */
+    padding-bottom: 269px; 
+    
+    border-bottom: 1.5px solid #ac8403; /* A linha divisória */
+}
+
+.main-text {
+    flex: 1;
+    width: 100%; 
+    max-width: 100%;
+}
+
+.main-text h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #7c6708; /* Dourado Escuro para os títulos principais */
+}
+
+/* OCULTANDO A IMAGEM ORIGINAL */
+.image-illustration {
+    display: none;
+}
+
+
+/* --- Botões --- */
+.buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+.btn-primary, .btn-secondary, .btn-info {
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-primary {
+    background-color: #a37b0bfa;
+    color: #382b07;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #AA843D;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #333333;
+    border: 2px solid #333333;
+}
+.btn-secondary:hover {
+    background-color: #E6E6E6;
+}
+.btn-secondary svg {
+    fill: #333333;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.btn-info {
+    background-color: #cab068;
+    color: #996e01;
+    border: 2px solid #c2a203;
+    display: inline-block;
+}
+.btn-info:hover {
+    background-color: #503e043d;
+}
+
+
+/* --- Seção de Benefícios (Cards) --- */
+
+.second-section {
+    padding-top: 50px;
+}
+
+.second-section-wrapper {
+    display: flex;
+    gap: 40px;
+}
+
+.info-text {
+    flex: 1;
+    max-width: 300px;
+}
+
+.info-text h2 {
+    font-size: 1.8rem;
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+.info-text p {
+    margin-bottom: 20px;
+}
+
+.cards-container {
+    flex: 2;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 1;
+    min-width: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgb(248, 244, 226);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #a58343;
+}
+
+.card .label {
+    background-color: #77681183;
+    color: #f5f5f5;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #333333;
+}
+
+.card p {
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+.card a {
+    color: #B8860B;
+    font-weight: bold;
+}
+
+/* --- Rodapé --- */
+footer {
+    background-color: #111111;
+    color: #992626;
+    text-align: right;
+    padding: px 10px; 
+    margin-top: 60px;
+}
+footer p {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+
+/* --- Media Queries --- */
+@media (max-width: 900px) {
+    .sidebar-toggler {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 110;
+        color: #333333;
+        font-size: 1.5rem;
+    }
+    .sidebar-collapser {
+        display: none; 
+    }
+    
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        display: none;
+    }
+    .sidebar.toggled ~ #overlay {
+        display: block;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 15px 20px;
+    }
+}
+
+@media (min-width: 901px) {
+    .sidebar-toggler, #overlay {
+        display: none !important;
+    }
+}
+
+/* ==================================== */
+/* 5. ESTILOS DE FUNDO PERSONALIZADO (IMAGEM NO TOPO) */
+/* ==================================== */
+
+.layout .content {
+    position: relative; 
+}
+
+.content-with-top-bg::before {
+    content: "";
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 550px; 
+    background-image: url('pag1.jpg');
+    background-size: cover;      
+    background-position: center top; 
+    background-repeat: no-repeat;
+    opacity: 0.15; 
+    z-index: -1; 
+}
+
+.main-section .image-illustration {
+    display: none;
+}
+.main-section .main-text {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+}

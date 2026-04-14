@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2° Log - Etiqueta</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  /* ==================================== */
+/* 1. RESET BÁSICO E CONFIGURAÇÃO DO LAYOUT PRINCIPAL (Dourado/Preto) */
+/* ==================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #ebe1bc; /* Fundo do conteúdo principal: Cinza muito claro */
+    color: #333333; /* Cor do texto principal: Preto suave */
+    height: 100vh;
+    font-size: 0.9rem;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ------------------------------------- */
+/* ESTRUTURA FLEXBOX PARA SIDEBAR + CONTEÚDO */
+/* ------------------------------------- */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.layout .content {
+    /* CHAVE: Garante que o conteúdo ocupe o restante do espaço */
+    flex-grow: 1;
+    /* CHAVE: Adiciona uma margem esquerda para compensar a largura MÍNIMA do sidebar fixo */
+    margin-left: 260px; /* Largura padrão do sidebar (260px) */
+    
+    padding: 30px 60px; 
+    
+    transition: margin-left 0.3s ease; 
+}
+
+/* Ajusta o conteúdo quando o sidebar está colapsado (80px) */
+.layout .sidebar.collapsed ~ .content {
+    margin-left: 80px;
+}
+
+/* Ajusta o conteúdo em telas menores, pois o sidebar está em `position: fixed` e não afeta o fluxo */
+@media (max-width: 900px) {
+    .layout .content {
+        margin-left: 0; 
+        padding: 20px; 
+    }
+}
+
+/* ==================================== */
+/* 2. ESTILOS DO NOVO CABEÇALHO (DENTRO DE .content) */
+/* ==================================== */
+
+header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    
+    padding: 10px 0 40px 0; 
+}
+
+.logo {
+    font-weight: bold;
+    color: #C5A300; /* Dourado Escuro para o logo no conteúdo */
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+/* ==================================== */
+/* 3. ESTILOS DO SIDEBAR (MENU LATERAL) - PRETO E DOURADO */
+/* ==================================== */
+
+.sidebar {
+    color: #E0E0E0; /* Cor do texto dos ícones e títulos (Cinza muito claro) */
+    overflow-x: hidden !important;
+    position: fixed; 
+    width: 260px;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background-color: #111111; /* Fundo principal: PRETO ESCURO */
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+/* --- Estilos Mobile (Ocultar e Mostrar com 'toggled') --- */
+@media (max-width: 900px) {
+    .sidebar {
+        left: -260px; 
+    }
+    .sidebar.toggled {
+        left: 0; 
+    }
+}
+
+/* --- Estrutura Interna do Sidebar --- */
+
+.sidebar .sidebar-layout {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .sidebar-layout .sidebar-header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.layout .sidebar .pro-sidebar-logo {
+    display: flex;
+    align-items: center;
+    color: #B8860B; /* Dourado Profundo para o título principal no sidebar */
+}
+.layout .sidebar .pro-sidebar-logo div {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.layout .sidebar .pro-sidebar-logo h5 {
+    font-weight: 500;
+    margin: 0;
+}
+
+.sidebar-collapser {
+    text-align: right;
+    padding: 0 20px;
+    cursor: pointer;
+    color: #B8860B; /* Dourado Profundo para o ícone de colapso */
+    font-size: 1.2rem;
+    line-height: 50px;
+}
+
+
+/* Garante que o footer e o texto do header desapareçam no modo colapsado */
+.layout .sidebar.collapsed .sidebar-header h5,
+.layout .sidebar.collapsed .sidebar-header .pro-sidebar-logo h5 { 
+    display: none; 
+}
+.layout .sidebar.collapsed .sidebar-header {
+    justify-content: center;
+}
+.layout .sidebar.collapsed .pro-sidebar-logo {
+    justify-content: center;
+    width: 100%; 
+}
+
+/* --- Estilos do Menu de Navegação --- */
+
+.layout .sidebar .menu {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+}
+
+.layout .sidebar .menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.layout .sidebar .menu .menu-header {
+    font-weight: 600;
+    padding: 10px 25px;
+    font-size: 0.8em;
+    letter-spacing: 2px;
+    opacity: 0.6; 
+    transition: opacity 0.3s;
+    color: #B3B3B3; /* Cinza claro suave */
+}
+
+/* Garante que o menu desapareça no modo colapsado */
+.layout .sidebar.collapsed .menu > ul > .menu-header {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.layout .sidebar .menu .menu-item a {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 20px;
+    color: #E0E0E0; /* Cor do link (Cinza muito claro) */
+    text-decoration: none;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.layout .sidebar .menu .menu-item a:hover {
+    color: #B8860B; /* Dourado Profundo no hover */
+    background-color: rgba(170, 132, 61, 0.1); /* Fundo sutil bronze no hover */
+}
+
+.layout .sidebar .menu .menu-item.active a {
+    color: #B8860B; /* Dourado Profundo para o item ativo */
+    background-color: rgba(170, 132, 61, 0.2); /* Fundo mais forte bronze para o ativo */
+}
+
+.layout .sidebar .menu .menu-icon {
+    font-size: 1.2rem;
+    width: 30px;
+    min-width: 30px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.layout .sidebar.collapsed .menu-title,
+.layout .sidebar.collapsed .menu-suffix {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.3s, width 0.3s;
+}
+
+/* Estilos de badge */
+.badge.primary {
+    background-color: #C5A300; /* DOURADO ESCURO (Badge) */
+    color: #111111; /* Preto para contraste */
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    margin-left: auto;
+}
+
+/* ==================================== */
+/* 4. ESTILOS DO CONTEÚDO PRINCIPAL (Inputs e Botões) */
+/* ==================================== */
+
+/* --- BOTÕES E INPUTS DE FORMULÁRIO --- */
+.buttons-group, .button-group { /* Mantendo o .button-group para compatibilidade */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* BOTÃO DE SALVAR QUE PRECISA SER GRANDE (Aumentado para corresponder ao layout anterior) */
+.btn-save {
+    background: #a37b0bfa; /* Cor primária do novo layout */
+    color: #382b07;
+    padding: 15px 30px; 
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.3s;
+    font-size: 1.2em;
+}
+.btn-save:hover {
+    background: #AA843D; /* Hover Dourado */
+}
+
+/* Estilos dos inputs de formulário (Mantidos do seu estilo anterior) */
+.main-columns-container {
+    display: flex;
+    gap: 30px;
+}
+
+.input-column {
+    flex: 1; 
+    max-width: 450px; 
+}
+
+input[type="text"], 
+input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 6px 0 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    gap: 16px;
+}
+
+.col {
+    flex: 1;
+}
+
+/* ==================================== */
+/* 5. ESTILOS DA ETIQUETA (MANTIDOS INTACTOS) */
+/* ==================================== */
+
+/* --- ETIQUETA (VISUALIZAÇÃO NA TELA) --- */
+#shippingLabel { 
+    width: 100mm; 
+    height: 150mm; 
+    padding: 3mm; 
+    border: 1px dashed #0c1e35; 
+    background: #fff;
+    box-sizing: border-box; 
+    
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-family: Arial, sans-serif;
+    line-height: 1.2;
+    
+    font-size: 11px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.etiqueta-header {
+    display: flex !important;
+    /* Centraliza os itens horizontalmente */
+    justify-content: space-between !important; 
+    align-items: center !important;
+    border-bottom: 1px dotted #000 !important; 
+    padding-bottom: 3px !important; 
+    font-size: 8pt;
+    flex-shrink: 0;
+}
+
+/* Novo estilo para o texto "LOGÍSTICA EXPRESS" */
+#headerTitle {
+    font-weight: 100; 
+    color: #0c1e35;
+    text-align: center; /* Centraliza o texto dentro da sua div */
+    flex-grow: 1; /* Permite que ocupe o espaço central */
+    order: 2; /* Garante que ele fique no centro visualmente */
+}
+
+#espacoLogo {
+    width: 25px; 
+    height: 25px; 
+    margin: 0 5px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    order: 1; /* Garante que a logo fique à esquerda */
+}
+#volumeText {
+    text-align: right;
+    order: 3; /* Garante que o volume fique à direita */
+}
+
+#logoEtiqueta {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.etiqueta-corpo { 
+    display: flex; 
+    gap: 15px;
+    padding: 8px 0;
+    flex-shrink: 0;
+}
+
+/* 🎯 ESTILOS DO FOOTER: Vertical e Alinhado ao topo */
+.etiqueta-footer {
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between; 
+    margin-top: 4mm;
+    flex-grow: 1; 
+    font-size: 11px;
+    text-align: center;
+}
+
+/* Bloco superior do footer: Rastreio */
+.bloco-rastreio-texto {
+    /* Fica no topo à esquerda, ocupando 90% da largura, centralizado */
+    flex: none; 
+    text-align: left;
+    width: 90%; 
+    margin: 0 auto; 
+    padding-bottom: 5px;
+}
+
+/* Container para o Rastreio e a Logo */
+#blocoRastreioLogo {
+    display: flex;
+    align-items: center; /* Alinha verticalmente a logo com o texto */
+    justify-content: flex-start;
+    gap: 10px; /* Espaço entre o Rastreio e a Logo */
+}
+
+#logoRastreio {
+    width: 120px; 
+    height: 120px; 
+    object-fit: contain;
+}
+
+/* Bloco central do footer: QR Code */
+.bloco-rastreio-qrcode {
+    /* Ocupa o espaço central entre o rastreio e o número longo */
+    flex-grow: 1; 
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    margin-top: 5px; 
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+#numeroRastreio {
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    display: block; 
+    margin-bottom: 6px;
+}
+
+/* Bloco inferior do footer: Número Longo */
+#numeroLongoBase {
+    text-align: center;
+    font-size: 10px;
+    margin-top: auto; 
+    padding-top: 5px;
+}
+
+/* ==================================== */
+/* 6. ESTILOS DE FUNDO PERSONALIZADO (IMAGEM NO TOPO) */
+/* ==================================== */
+
+.layout .content {
+    position: relative; 
+}
+
+.content-with-top-bg::before {
+    content: "";
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 550px; 
+    background-image: url('pag1.jpg');
+    background-size: cover;      
+    background-position: center top; 
+    background-repeat: no-repeat;
+    opacity: 0.15; 
+    z-index: -1; 
+}
+
+.main-section .image-illustration {
+    display: none;
+}
+.main-section .main-text {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* --- Media Queries (Para responsividade do layout) --- */
+@media (max-width: 900px) {
+    .sidebar-toggler {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 110;
+        color: #333333;
+        font-size: 1.5rem;
+    }
+    .sidebar-collapser {
+        display: none; 
+    }
+    
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        display: none;
+    }
+    .sidebar.toggled ~ #overlay {
+        display: block;
+    }
+}
+
+@media (min-width: 901px) {
+    .sidebar-toggler, #overlay {
+        display: none !important;
+    }
+}
+  
+    
+</style>
+</head>
+<body class="layout">
+
+    <div id="overlay"></div>
+
+    <a id="btn-toggle" class="sidebar-toggler" href="#">
+        <i class="fas fa-bars"></i>
+    </a>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-layout">
+            
+            <div class="sidebar-header">
+                <a href="#" class="pro-sidebar-logo">
+                    <img 
+                        src="logo.png" 
+                        alt="Logo Painel de Gestão" 
+                        style="width: 60px; height: 60px; margin-right: 2px;"
+                    >
+                    <h5>2° Logística</h5>
+                </a>
+            </div>
+
+            <nav class="menu">
+                <div class="menu open-current-submenu">
+                    <ul>
+                        <li class="menu-header">GERENCIAMENTO</li>
+                        <li class="menu-item active">
+                            <a href="index.html">
+                                <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                <span class="menu-title">Início</span>
+                            </a>
+                        </li>
+                        <li class="menu-item"> 
+                            <a href="cracha.html">
+                                <span class="menu-icon"><i class="fas fa-box-open"></i></span>
+                                <span class="menu-title">Crachá</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="edit-order.php">
+                                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                                <span class="menu-title">Nota Fiscal</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="view-orders.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Estatísticas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="etiqueta.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Etiquetas</span>
+                            </a>
+                        <li class="menu-item">
+                            <a href="sorteio.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Roleta de Prémios</span>
+                            </a>    
+                        </li>
+                    </ul>
+                    <div id="btn-collapse" class="sidebar-collapser"> 
+                        <i class="fas fa-angle-double-left" id="collapse-icon"></i> 
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="page-header" style="margin-bottom: 20px;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #C5A300;">Cross Docking</div>
+        </div>
+          
+
+
+        <div class="main-columns-container">
+            <div class="input-column">
+                <h2>Gerador de Etiqueta</h2>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <label for="inputNome">Nome Destinatário</label>
+                        <input id="inputNome" type="text" value="Maria Aparecida" />
+                    </div>
+                    <div class="col">
+                        <label for="inputRua">Endereço</label>
+                        <input id="inputRua" type="text" value="Rua das Flores, 100, Casa B" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="inputCidade">Cidade / CEP</label>
+                        <input id="inputCidade" type="text" value="Belo Horizonte - MG, 30000-000" />
+                    </div>
+                    <div class="col">
+                        <label for="inputRastreio">Nº Rastreio</label>
+                        <input id="inputRastreio" type="text" value="LX123456789BR" />
+                    </div>
+                </div>
+
+                <div style="max-width:220px;">
+                    <label for="inputPeso">Peso (KG)</label>
+                    <input id="inputPeso" type="number" value="1.2" step="0.1" />
+                </div>
+
+                <div class="button-group">
+                    <button id="btnSaveEtiqueta" class="btn-save"><i class="fas fa-save"></i> Salvar Etiqueta (PNG)</button>
+                </div>
+                <hr>
+            </div>
+            
+            <div id="shippingLabel">
+                <div class="etiqueta-header">
+            
+                    <div id="headerTitle">
+                        LOGÍSTICA EXPRESS
+                    </div>
+                
+                </div>
+
+                <div class="etiqueta-corpo">
+                    <div class="etiqueta-remetente" style="flex:1; padding-right:12px; border-right: 1px dotted #000;">
+                        <p style="margin:0 0 5px 0; font-weight: 700;">REMETENTE:</p>
+                        <strong style="display:block;">Cross Docking</strong>
+                        <p style="margin:2px 0;">Av.Josê Cândido da Silveira, 2000 - Horto Florestal</p>
+                        <p style="margin:2px 0;">Minas Gerais - MG, 31170-000</p>
+                    </div>
+
+                    <div class="etiqueta-destinatario" style="flex:1; padding-left:12px;">
+                        <p style="margin:0 0 5px 0; font-weight: 700;">DESTINATÁRIO:</p>
+                        <strong id="destinatarioNome" style="font-size:1.2em; display:block;">MARIA APARECIDA</strong>
+                        <p id="destinatarioEndereco" style="margin:2px 0;">RUA DAS FLORES, 100, CASA B</p>
+                        <p id="destinatarioCidade" style="margin:2px 0;">BELO HORIZONTE - MG, 30000-000</p>
+                    </div>
+                </div>
+
+                <hr style="border-top:1px dashed #000; margin:4px 0;">
+
+                <div class="etiqueta-footer">
+                    <div class="bloco-rastreio-texto">
+                        <div id="blocoRastreioLogo">
+                            <div>
+                                <p style="margin:0 0 6px 0;">Nº RASTREIO:</p>
+                                <span id="numeroRastreio" style="font-weight:700; display:block; margin-bottom:6px; font-size: 1.5rem;">LX123456789BR</span>
+                                <p style="margin:0;">PESO: <span id="pesoAproximado">1.2</span> KG</p>
+                            </div>
+                            
+                            <img src="logo.png" alt="Logo Logística" id="logoRastreio">
+                        </div>
+                    </div>
+
+                    <div class="bloco-rastreio-qrcode">
+                        <div id="qrcode" style="width:100px; height:100px; display:flex; align-items:center; justify-content:center; background:#fff;"></div>
+                    </div>
+                    
+                    <small id="numeroLongoBase">4325.1111.2222.3333.4444.5555.6666.7777</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function(){
+    // Elementos de Entrada
+    const inputNome = document.getElementById('inputNome');
+    const inputRua = document.getElementById('inputRua');
+    const inputCidade = document.getElementById('inputCidade');
+    const inputRastreio = document.getElementById('inputRastreio');
+    const inputPeso = document.getElementById('inputPeso');
+
+    // Elementos da Etiqueta
+    const destinatarioNome = document.getElementById('destinatarioNome');
+    const destinatarioEndereco = document.getElementById('destinatarioEndereco');
+    const destinatarioCidade = document.getElementById('destinatarioCidade');
+    const numeroRastreio = document.getElementById('numeroRastreio');
+    const pesoAproximado = document.getElementById('pesoAproximado');
+    const qrContainer = document.getElementById('qrcode');
+    const shippingLabel = document.getElementById('shippingLabel');
+    
+    const btnSaveEtiqueta = document.getElementById('btnSaveEtiqueta');
+
+    // Função que atualiza todos os campos da etiqueta
+    function updateLabel(){
+        destinatarioNome.innerText = (inputNome.value || '').toUpperCase();
+        destinatarioEndereco.innerText = (inputRua.value || '').toUpperCase();
+        destinatarioCidade.innerText = (inputCidade.value || '').toUpperCase();
+        numeroRastreio.innerText = (inputRastreio.value || '—').toUpperCase();
+        pesoAproximado.innerText = (inputPeso.value || '0');
+        renderQRCode(inputRastreio.value || '');
+    }
+
+    // Função que gera o QR Code
+    function renderQRCode(text){
+        try {
+            qrContainer.innerHTML = ''; // Limpa o QR anterior
+            if (!text) return;
+            let size = 80; 
+            if (window.QRCode) {
+                new QRCode(qrContainer, {
+                    text: text,
+                    width: size, 
+                    height: size,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                qrContainer.innerText = 'QR Code'; // Fallback se a biblioteca não carregar
+            }
+        } catch (err) {
+            console.error('Erro ao gerar QRCode:', err);
+            qrContainer.innerText = 'Erro QR'; 
+        }
+    }
+    
+    /* MÉTODO CORRIGIDO: SALVAR SOMENTE A ETIQUETA COMO IMAGEM (PNG) */
+    function saveLabelAsImage(){
+        updateLabel(); // Garante que os dados e o QR Code estejam atualizados
+
+        if (typeof html2canvas !== 'function') {
+            alert('Erro: A biblioteca html2canvas é necessária para salvar. Verifique se o script foi carregado corretamente.');
+            return;
+        }
+
+        // Armazena e remove a borda tracejada de visualização (opcional)
+        const originalBorder = shippingLabel.style.border;
+        shippingLabel.style.border = 'none'; // Sem borda tracejada na imagem final
+
+        // Captura a div da etiqueta e converte para Canvas
+        html2canvas(shippingLabel, {
+            scale: 3, // Aumenta a escala para melhor resolução
+            useCORS: true, // Permite o uso de imagens externas (logo)
+            logging: false, 
+        }).then(function(canvas) {
+            // Restaura a borda original após a captura
+            shippingLabel.style.border = originalBorder;
+
+            // Converte o Canvas para uma URL de imagem (PNG)
+            const image = canvas.toDataURL('image/png');
+
+            // Cria um link e força o download
+            const link = document.createElement('a');
+            link.href = image;
+            
+            // Define o nome do arquivo usando o número de rastreio
+            const nomeRastreio = inputRastreio.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            link.download = `etiqueta_${nomeRastreio || 'logistica'}.png`;
+
+            // Simula o clique de download
+            link.click(); 
+
+            console.log(`Etiqueta salva como: ${link.download}`);
+        }).catch(error => {
+            shippingLabel.style.border = originalBorder; // Garante que a borda seja restaurada
+            console.error("Erro ao gerar a imagem da etiqueta:", error);
+            alert("Não foi possível gerar a etiqueta como imagem. Verifique o console para detalhes.");
+        });
+    }
+
+    // Event listeners para atualizar a etiqueta em tempo real
+    [inputNome, inputRua, inputCidade, inputRastreio, inputPeso].forEach(el => {
+        el.addEventListener('input', updateLabel);
+    });
+
+    // Event listener para o botão de Salvar
+    btnSaveEtiqueta.addEventListener('click', saveLabelAsImage);
+
+    // Inicializa a etiqueta ao carregar a página
+    updateLabel();
+});
+    </script>
+</body>
+</html>

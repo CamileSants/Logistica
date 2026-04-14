@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2° Log</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css"> 
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+</head>
+<body class="layout">
+
+    <div id="overlay"></div>
+
+   <a id="btn-toggle" class="sidebar-toggler" href="#">
+        <i class="fas fa-bars"></i>
+    </a>
+
+   
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-layout">
+            
+            <div class="sidebar-header">
+                <a href="#" class="pro-sidebar-logo">
+                   <img 
+                        src="logo.png" 
+                        alt="Logo Painel de Gestão" 
+                        style="width: 60px; height: 60px; margin-right: 2px;"
+                    >
+                    <h5>2° Logística</h5>
+                </a>
+            </div>
+
+            <nav class="menu">
+                <div class="menu open-current-submenu">
+                    <ul>
+                        <li class="menu-header">GERENCIAMENTO</li>
+                        <li class="menu-item active">
+                            <a href="index.html">
+                                <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                <span class="menu-title">Início</span>
+                            </a>
+                        </li>
+                        <li class="menu-item"> 
+                            <a href="cracha.html">
+                                <span class="menu-icon"><i class="fas fa-box-open"></i></span>
+                                <span class="menu-title">Crachá</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="edit-order.php">
+                                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                                <span class="menu-title">Nota Fiscal</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="view-orders.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Estatísticas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="etiqueta.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Etiquetas</span>
+                            </a>
+                        <li class="menu-item">
+                            <a href="sorteio.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Roleta de Prémios</span>
+                            </a>    
+                        </li>
+                    </ul>
+                    <div id="btn-collapse" class="sidebar-collapser"> 
+                        <i class="fas fa-angle-double-left" id="collapse-icon"></i> 
+                    </div>
+            </nav>
+            </div>
+           
+    </div>
+    
+   <div class="content content-with-top-bg">
+        
+        <header>
+            <div class="logo">Cross Docking</div>
+        </header>
+
+        <section class="main-section">
+    <div class="main-text">
+        <h1>Sua Logística em Velocidade Máxima. Controle total do Cross-Docking.</h1>
+        <p>Despache, Rastreie e Gerencie encomendas com a máxima eficiência, eliminando atrasos.</p>
+        <div class="buttons-group">
+            <a href="edit-order.php" class="btn-primary">Novo Encomenda</a>
+        </div>
+    </div>
+    <div class="image-illustration">
+        <img src="pag1.jpg" alt="Logistica" style="width:90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);" />
+    </div>
+    
+</section>
+
+<section class="second-section">
+    <div class="second-section-wrapper">
+        <div class="info-text">
+            <h2>Ferramentas Chave para um Fluxo Impecável</h2>
+            <p>Tudo que você precisa para acelerar as operações: da identificação da equipe à análise de resultados.</p>
+             <a href="#" class="btn-info">Ver Funcionalidades</a>
+        </div>
+        
+        <div class="cards-container">
+            <div class="card">
+                <div class="label">Pessoas</div>
+                <h3>Identificação Rápida de Colaboradores</h3>
+                <p>Crie cartões de identificação na hora, mantendo a equipe organizada e o acesso seguro.</p>
+                 <a href="cracha.html">Criar Crachá</a>
+            </div>
+            
+            <div class="card">
+                <div class="label">Rastreamento</div>
+                <h3>Emissão de Etiquetas com Rastreio</h3>
+                <p>Gere etiquetas de envio prontas e padronizadas, essenciais para o rastreamento logístico.</p>
+                 <a href="etiqueta.html">Gerar Etiquetas</a>
+            </div>
+            
+            <div class="card">
+                <div class="label">Análise</div>
+                <h3>Visualização de Resultados em Tempo Real</h3>
+                <p>Acesse o painel de métricas para avaliar o tempo de processamento e a performance da distribuição.</p>
+                 <a href="view-orders.html">Gerenciar Encomendas</a>
+            </div>
+        </div>
+    </div>
+</section>
+      
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

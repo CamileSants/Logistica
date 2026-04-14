@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleta Circular - 70 Setores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2d2d2d;
+            --secondary-color: #FFD700;
+            --text-color: #f8f9fa;
+            --card-color: #212121;
+            --sector-color-odd: #000000;
+            --sector-color-even: #333333;
+            --sector-color-alt: #B8860B; 
+            --number-color: #FFD700;
+            --roleta-tamanho: 500px; 
+            --total-sectors: 70;
+            --angle-per-sector: calc(360deg / var(--total-sectors));
+        }
+
+        .main-section {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: none;
+        }
+        
+        .main-section .left-panel {
+            flex: 1;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .main-section .right-panel {
+            width: var(--roleta-tamanho);
+            min-width: var(--roleta-tamanho);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .roulette-wrapper {
+            position: relative;
+            width: var(--roleta-tamanho);
+            height: var(--roleta-tamanho);
+            margin: 0 auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid var(--secondary-color);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+            transition: transform 6s cubic-bezier(0.2, 0.9, 0.4, 1);
+            background-color: var(--primary-color);
+        }
+
+        .indicator {
+            position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; 
+            border-bottom: 20px solid var(--secondary-color); z-index: 10;
+        }
+
+        .sector {
+            position: absolute; width: 50%; height: 50%; top: 50%; left: 50%; transform-origin: 0% 0%;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+        }
+
+        .sector-content { position: absolute; top: 0; left: 0; width: 200%; height: 200%; transform-origin: 0% 0%; }
+
+        .sector-content span {
+            position: absolute; left: 50%; transform: translateX(-50%) rotate(-90deg); top: -20px;
+            font-size: 0.6em; font-weight: bold; color: var(--number-color);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fdfae7;
+            border: 2px solid #a58343;
+            border-radius: 10px;
+            text-align: center;
+            color: #111111;
+        }
+        
+        .result-box h2 {
+            font-size: 1.4em;
+            color: #7c6708;
+            margin-bottom: 5px;
+        }
+
+        #result-text {
+            font-size: 2.5em;
+            font-weight: 800;
+        }
+
+        .win-text { color: #B8860B; text-shadow: 0 0 5px rgba(184, 134, 11, 0.5); }
+        .lose-text { color: #990000; }
+        .try-again-text { color: #0055aa; }
+        
+        .spin-button {
+            background-color: #a37b0bfa;
+            color: #382b07;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em; 
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            max-width: 450px;
+        }
+        .spin-button:hover { background-color: #AA843D; }
+
+        @media (max-width: 900px) {
+            .main-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .main-section .left-panel {
+                order: 2;
+                padding: 0;
+            }
+
+            .main-section .right-panel {
+                order: 1;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .roulette-wrapper {
+                --roleta-tamanho: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="layout">
+
+    <div id="overlay"></div>
+
+    <a id="btn-toggle" class="sidebar-toggler" href="#">
+        <i class="fas fa-bars"></i>
+    </a>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-layout">
+            <div class="sidebar-header">
+                <a href="#" class="pro-sidebar-logo">
+                   <img src="logo.png" alt="Logo Painel de Gestão" style="width: 60px; height: 60px; margin-right: 2px;">
+                    <h5>2° Logística</h5>
+                </a>
+            </div>
+            <nav class="menu">
+                <div class="menu open-current-submenu">
+                    <ul>
+                        <li class="menu-header">GERENCIAMENTO</li>
+                        <li class="menu-item active">
+                            <a href="index.html">
+                                <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                <span class="menu-title">Início</span>
+                            </a>
+                        </li>
+                        <li class="menu-item"> 
+                            <a href="cracha.html">
+                                <span class="menu-icon"><i class="fas fa-box-open"></i></span>
+                                <span class="menu-title">Crachá</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="edit-order.php">
+                                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                                <span class="menu-title">Nota Fiscal</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="view-orders.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Estatísticas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="etiqueta.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Etiquetas</span>
+                            </a>
+                        <li class="menu-item">
+                            <a href="sorteio.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Roleta de Prémios</span>
+                            </a>    
+                        </li>
+                    </ul>
+                    <div id="btn-collapse" class="sidebar-collapser"> 
+                        <i class="fas fa-angle-double-left" id="collapse-icon"></i> 
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="content">
+        <header>
+            <div class="logo">Cross Docking</div>
+        </header>
+
+        <section class="main-section">
+            <div class="left-panel">
+                <h1 style="font-size: 2.2rem;">Roleta da Sorte ✨</h1>
+                <p style="color: #666; margin-bottom: 25px;">70 Números | 13 Ganhadores | 17 Tente Novamente | 40 Perdedores</p>
+
+                <div class="result-box">
+                    <h2>Número Sorteado:</h2>
+                    <p id="result-text">---</p>
+                </div>
+
+                <button id="spin-button" class="spin-button">GIRAR ROLETA</button>
+            </div>
+
+            <div class="right-panel">
+                <div class="roulette-wrapper">
+                    <div class="indicator"></div>
+                    <div id="wheel" class="wheel"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+<script>
+/* ======================================================
+      LÓGICA ATUALIZADA PARA 70 SETORES
+      13 GANHADORES | 17 TENTE NOVAMENTE | 40 PERDEDORES
+======================================================= */
+
+const TOTAL = 70;
+const WIN = 13;
+const TRY = 17;
+const LOSE = TOTAL - WIN - TRY; // 40
+
+// Embaralha a lista 1–70
+let sectors = Array.from({ length: TOTAL }, (_, i) => i + 1);
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+shuffle(sectors);
+
+// Sorteia os grupos
+const TRY_AGAIN = sectors.slice(0, TRY);
+const WINNERS = sectors.slice(TRY, TRY + WIN);
+const LOSERS = sectors.slice(TRY + WIN);
+
+console.log("VENCEDORES:", WINNERS);
+console.log("TENTE NOVAMENTE:", TRY_AGAIN);
+console.log("PERDEDORES:", LOSERS);
+
+const wheel = document.getElementById("wheel");
+const resultText = document.getElementById("result-text");
+const spinButton = document.getElementById("spin-button");
+const ANGLE = 360 / TOTAL;
+
+/* --------------------------  
+    CRIA OS SETORES
+-------------------------- */
+function createSectors() {
+    for (let i = 0; i < TOTAL; i++) {
+        const sector = document.createElement("div");
+        sector.classList.add("sector");
+
+        const colorIndex = i % 3;
+        if (colorIndex === 0) sector.style.background = "var(--sector-color-odd)";
+        else if (colorIndex === 1) sector.style.background = "var(--sector-color-even)";
+        else sector.style.background = "var(--sector-color-alt)";
+
+        sector.style.transform = `rotate(${i * ANGLE}deg) skewY(${90 - ANGLE}deg)`;
+
+        const content = document.createElement("div");
+        content.classList.add("sector-content");
+        content.style.transform = `rotate(${ANGLE / 2}deg) skewY(-${90 - ANGLE}deg)`;
+
+        const span = document.createElement("span");
+        const number = sectors[i];
+
+        if (TRY_AGAIN.includes(number)) {
+            span.textContent = "TENTE\nNOVAMENTE";
+            span.style.whiteSpace = "pre-line";
+            span.style.color = "#0055aa";
+        } else {
+            span.textContent = number;
+        }
+
+        content.appendChild(span);
+        sector.appendChild(content);
+        wheel.appendChild(sector);
+    }
+}
+
+/* --------------------------  
+      CÁLCULO DO GIRO
+-------------------------- */
+function getTargetAngle(index) {
+    const base = index * ANGLE + ANGLE / 2;
+    const spins = Math.floor(Math.random() * 6) + 5;
+    return 360 * spins - base;
+}
+
+/* --------------------------  
+           GIRO
+-------------------------- */
+function spin() {
+    spinButton.disabled = true;
+    spinButton.textContent = "GIRANDO...";
+    resultText.textContent = "Aguarde...";
+
+    const index = Math.floor(Math.random() * TOTAL);
+    const value = sectors[index];
+
+    const target = getTargetAngle(index);
+
+    wheel.style.transition = "none";
+    void wheel.offsetWidth;
+    wheel.style.transition = "transform 6s ease-out";
+    wheel.style.transform = `rotate(${target}deg)`;
+
+    setTimeout(() => {
+
+        if (TRY_AGAIN.includes(value)) {
+            resultText.textContent = `🔄 TENTE NOVAMENTE`;
+            resultText.className = "try-again-text";
+
+        } else if (WINNERS.includes(value)) {
+            resultText.textContent = `⭐ VOCÊ GANHOU! Número: ${value}`;
+            resultText.className = "win-text";
+
+        } else {
+            resultText.textContent = `❌ VOCÊ PERDEU. Número: ${value}`;
+            resultText.className = "lose-text";
+        }
+
+        spinButton.disabled = false;
+        spinButton.textContent = "GIRAR ROLETA";
+
+    }, 6000);
+}
+
+createSectors();
+spinButton.addEventListener("click", spin);
+</script>
+
+</body>
+</html>

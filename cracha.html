@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Crachás Interativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+   <style>
+    /* ---------------------------------------------------- */
+    /* ✅ AJUSTES PARA LAYOUT PRINCIPAL E STICKY FOOTER */
+    /* ---------------------------------------------------- */
+    body {
+        /* Sobrescreve o display: flex; align-items: center; anterior */
+        font-family: 'Poppins', Arial, sans-serif; /* Usando Poppins que você importou */
+        padding: 0; 
+        background-color: #ebe1bc; /* Fundo mais suave para contraste */
+        
+        /* Configuração Flexbox para Sticky Footer */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    /* Permite que o container principal (que inclui o sidebar e o content) cresça */
+    .layout {
+        flex-grow: 1;
+        display: flex; /* Mantém o layout de sidebar + conteúdo */
+    }
+    
+    /* Remove padding do .content se ele for o único container, para garantir que o footer fique na borda */
+    .content {
+        padding-bottom: 0 !important;
+    }
+    
+    /* ---------------------------------------------------- */
+    /* 🎨 MELHORIAS DE ESTILO NA PÁGINA (SEM MEXER NO CRACHÁ) */
+    /* ---------------------------------------------------- */
+
+    .central-content-wrapper {
+        display: flex;
+        justify-content: center; 
+        align-items: flex-start; 
+        gap: 80px; /* Reduzido o gap para melhor aproveitamento em telas menores */
+        margin-top: 30px; 
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    /* 1. TÍTULO E TEXTO */
+    .main-text h1 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #B8860B; /* Dourado Profundo */
+        border-bottom: 3px solid rgba(184, 134, 11, 0.3);
+        padding-bottom: 5px;
+    }
+
+    /* 2. CONTAINER DO CRACHÁ COM VISUAL 3D MAIS ELEGANTE */
+    .container-cracha {
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(184, 134, 11, 0.2); /* Sombra mais profunda + borda sutil dourada */
+        margin-top: 0;
+        transform: translateY(0);
+        transition: transform 0.3s ease-in-out;
+    }
+    .container-cracha:hover {
+        transform: translateY(-5px); /* Efeito de elevação sutil */
+    }
+    
+    .input-area-wrapper {
+        max-width: 400px; /* Aumentado para melhor UX */
+        width: 100%;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600; /* Mais peso */
+        color: #444;
+        font-size: 0.95em;
+    }
+
+    /* 3. CAMPOS DE INPUT */
+    input[type="text"], input[type="file"] { 
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px; /* Cantos mais suaves */
+        box-sizing: border-box;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    input[type="text"]:focus {
+        border-color: #C5A300; /* Dourado no foco */
+        box-shadow: 0 0 0 3px rgba(197, 163, 0, 0.2); /* Brilho suave */
+        outline: none;
+    }
+    
+    .logo-fixa {
+        background-color: #f7f3e8; /* Fundo mais alinhado com o tema principal (bege/dourado) */
+        border: 1px solid #C5A300;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        color: #7c6708;
+    }
+
+    /* 4. BOTÕES (Unificação e Estilo Premium) */
+    
+    /* Botão Imprimir (Mantendo a cor original, mas com estilo moderno) */
+    .btn-imprimir {
+        /* display, width, padding, margin-top mantidos */
+        background-color: #b6aa06; 
+        color: #382b07; /* Texto mais escuro para contraste */
+        border: none;
+        border-radius: 8px;
+        font-size: 1em; 
+        font-weight: 700;
+        transition: background-color 0.3s, transform 0.1s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-imprimir:hover {
+        background-color: #AA9933; /* Tom mais escuro no hover */
+        transform: translateY(-1px);
+    }
+
+  /* Botão Salvar (Foco no Preto/Dourado) - AUMENTADO */
+.btn-salvar {
+    display: inline-block; /* Garante que padding e width funcionem */
+    width: auto; /* Pode ser ajustado para um valor fixo (ex: 200px) se necessário */
+    
+    /* AUMENTO PRINCIPAL: Mais padding para um botão mais alto e largo */
+    padding: 15px 30px; 
+    
+    margin-top: 10px; /* Exemplo, ajuste conforme necessário */
+    background-color: #000000; 
+    color: #F8F8F8;
+    border: 2px solid #C5A300; 
+    border-radius: 12px; /* Ligeiramente mais arredondado para acompanhar o tamanho */
+    
+    /* AUMENTO DO TEXTO: Fonte maior */
+    font-size: 1.2em; /* Aumentado de 1em para 1.2em */
+    
+    font-weight: 700;
+    transition: background-color 0.3s, transform 0.1s, border-color 0.3s;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Sombra ligeiramente maior */
+}
+
+.btn-salvar:hover {
+    background-color: #cdaf03;
+    border-color: #FFD700; 
+    transform: translateY(-2px); /* Efeito de elevação um pouco maior */
+}
+    
+
+    /* ---------------------------------------------------- */
+    /* ✅ ESTILOS ESPECÍFICOS DO CRACHÁ (ORIGINAIS - INTOCADOS) */
+    /* ---------------------------------------------------- */
+
+    .cracha {
+        width: 300px;
+        height: 450px;
+        background-color: #060d11;
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .nome-empresa-topo {
+        width: 100%;
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .cracha-conteudo-central {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+        justify-content: center;
+    }
+
+    .logo-empresa {
+        max-width: 200px;
+        max-height: 100px;
+        object-fit: contain;
+        margin-top: 10px;
+        padding-top: 5px;
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
+        width: 100%;
+    }
+
+    .foto-pessoa {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #ffffff;
+        margin-bottom: 15px;
+    }
+
+    .nome-pessoa {
+        font-size: 1.8em;
+        font-weight: bold;
+        margin: 5px 0;
+        color: #ffffff;
+    }
+
+    .funcao-pessoa {
+        font-size: 1.1em;
+        margin-top: 5px;
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+</style>
+</head>
+<body class="layout">
+
+    <div id="overlay"></div>
+
+    <a id="btn-toggle" class="sidebar-toggler" href="#">
+        <i class="fas fa-bars"></i>
+    </a>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-layout">
+            
+            <div class="sidebar-header">
+                <a href="#" class="pro-sidebar-logo">
+                    <img 
+                        src="logo.png" 
+                        alt="Logo Painel de Gestão" 
+                        style="width: 60px; height: 60px; margin-right: 2px;"
+                    >
+                    <h5>2° Logística</h5>
+                </a>
+            </div>
+
+            <nav class="menu">
+                <div class="menu open-current-submenu">
+                    <ul>
+                       <li class="menu-header">GERENCIAMENTO</li>
+                        <li class="menu-item active">
+                            <a href="index.html">
+                                <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                <span class="menu-title">Início</span>
+                            </a>
+                        </li>
+                        <li class="menu-item"> 
+                            <a href="cracha.html">
+                                <span class="menu-icon"><i class="fas fa-box-open"></i></span>
+                                <span class="menu-title">Crachá</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="edit-order.php">
+                                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                                <span class="menu-title">Nota Fiscal</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="view-orders.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Estatísticas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="etiqueta.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Etiquetas</span>
+                            </a>
+                        <li class="menu-item">
+                            <a href="sorteio.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Roleta de Prémios</span>
+                            </a>    
+                        </li>
+                    </ul>
+                    <div id="btn-collapse" class="sidebar-collapser"> 
+                        <i class="fas fa-angle-double-left" id="collapse-icon"></i> 
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="content">
+        <header>
+            <div class="logo">Cross Docking</div>
+        </header>
+        
+        <div class="central-content-wrapper">
+        
+            <div class="input-area-wrapper">
+                
+                <div class="main-text">
+                    <h1>Crie seu Crachá!</h1>
+                </div>
+            
+                <label for="input-nome">Nome:</label>
+                <input type="text" id="input-nome" oninput="atualizarCracha()" placeholder="Ex: Maria da Silva">
+
+                <label for="input-funcao">Área de Serviço:</label>
+                <input type="text" id="input-funcao" oninput="atualizarCracha()" placeholder="Ex: Líder">
+
+                <label for="input-foto">📷 Escolha sua foto:</label>
+                <input type="file" id="input-foto" accept="image/*" onchange="atualizarCracha()">
+                
+                <button class="btn-salvar" onclick="salvarCrachaComoImagem()" style="margin-top: 20px;">
+                    Salvar Crachá
+                </button>
+
+            </div> <div class="container-cracha">
+                
+                <div class="cracha" id="cracha-preview">
+                    
+                    <p id="nome-empresa" class="nome-empresa-topo"></p>
+                    
+                    <div class="cracha-conteudo-central">
+                        <img id="foto-pessoa" class="foto-pessoa" src="placeholder_foto.png" alt="Foto da Pessoa">
+                        <p id="nome-pessoa" class="nome-pessoa">Nome funcionário</p>
+                        <p id="funcao-pessoa" class="funcao-pessoa">Função</p>
+                    </div>
+                    
+                    <img id="logo-empresa" class="logo-empresa" src="" alt="Logo da Empresa">
+                </div>
+            </div>
+            
+        </div> </div>
+
+    <script>
+        const NOME_EMPRESA_FIXO = '2° Logística';
+        const URL_LOGO_FIXA = 'logo.png';
+        const URL_FOTO_PADRAO = 'perfil.jpg';
+        
+        function atualizarCracha() {
+            const nome = document.getElementById('input-nome').value;
+            const funcao = document.getElementById('input-funcao').value;
+            const inputFoto = document.getElementById('input-foto');
+            
+            document.getElementById('nome-empresa').textContent = NOME_EMPRESA_FIXO;
+            document.getElementById('nome-pessoa').textContent = nome || 'Nome funcionário';
+            document.getElementById('funcao-pessoa').textContent = funcao || 'Função';
+            
+            const fotoElement = document.getElementById('foto-pessoa');
+            
+            if (inputFoto.files && inputFoto.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fotoElement.src = e.target.result;
+                };
+                reader.readAsDataURL(inputFoto.files[0]);
+            } else {
+                fotoElement.src = URL_FOTO_PADRAO;
+            }
+            
+            const logoElement = document.getElementById('logo-empresa');
+            logoElement.src = URL_LOGO_FIXA;
+            logoElement.onerror = () => { console.error('Erro ao carregar a logo fixa.'); }; 
+        }
+
+        // 💾 NOVA FUNÇÃO: Salvar o Crachá como Imagem
+        function salvarCrachaComoImagem() {
+            // 1. Obtém o elemento do crachá usando o ID 'cracha-preview'
+            const crachaElement = document.getElementById('cracha-preview');
+            const nomePessoa = document.getElementById('input-nome').value || 'Novo Cracha';
+
+            // 2. Chama a função da biblioteca html2canvas
+            html2canvas(crachaElement, {
+                scale: 3, // Aumenta a escala para uma imagem de melhor qualidade
+                logging: false,
+                useCORS: true // Essencial se estiver usando imagens de URLs externas
+            }).then(function(canvas) {
+                // 3. Converte o canvas (imagem) em uma URL de dados
+                const image = canvas.toDataURL("image/png");
+                
+                // 4. Cria um link de download temporário
+                const link = document.createElement('a');
+                link.href = image;
+                
+                // 5. Define o nome do arquivo, usando o nome da pessoa
+                link.download = `Cracha-${nomePessoa.replace(/\s/g, '_')}.png`;
+                
+                // 6. Simula o clique no link para iniciar o download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarCracha);
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Nota Fiscal - Sistema</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> 
+
+    <style>
+        /* CSS de layout mantido */
+        .form-and-illustration-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px; 
+            margin-top: 20px; 
+        }
+        .form-column {
+            flex: 2; 
+            min-width: 400px; 
+        }
+        .illustration-column {
+            flex: 1; 
+            min-width: 300px;
+        }
+        @media (max-width: 900px) {
+            .form-and-illustration-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+            }
+            .form-column, 
+            .illustration-column {
+                flex: auto;
+                width: 100%;
+                min-width: auto;
+            }
+        }
+        /* Estilo customizado do botão */
+        .btn-primary {
+            background-color: #5d8cfd; /* Cor do seu tema */
+            border-color: #5d8cfd;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #4a75e0;
+        }
+        .btn-success { /* Estilo para o novo botão de E-mail */
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body class="layout">
+
+    <div id="overlay"></div>
+
+   <a id="btn-toggle" class="sidebar-toggler" href="#">
+        <i class="fas fa-bars"></i>
+    </a>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-layout">
+            <div class="sidebar-header">
+                <a href="#" class="pro-sidebar-logo">
+                    <img 
+                        src="logo.png" 
+                        alt="Logo Painel de Gestão" 
+                        style="width: 60px; height: 60px; margin-right: 2px;"
+                    >
+                    <h5>2° Logística</h5>
+                </a>
+            </div>
+            <nav class="menu">
+                <div class="menu open-current-submenu">
+                    <ul>
+                        <li class="menu-header">GERENCIAMENTO</li>
+                        <li class="menu-item active">
+                            <a href="index.html">
+                                <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                <span class="menu-title">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-item"> 
+                            <a href="add-order.html">
+                                <span class="menu-icon"><i class="fas fa-box-open"></i></span>
+                                <span class="menu-title">Encomendas</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="edit-order.html">
+                                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                                <span class="menu-title">Clientes</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="view-orders.html">
+                                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                                <span class="menu-title">Estatísticas</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div id="btn-collapse" class="sidebar-collapser"> 
+                        <i class="fas fa-angle-double-left" id="collapse-icon"></i> 
+                    </div>
+                </div>
+            </nav>
+        </div>
+        </div>
+        
+    <div class="content">
+        
+        <header><div class="logo">MeuSite.dev</div></header>
+
+        <div class="main-section" style="padding-bottom: 30px; border-bottom: none;">
+            <div class="main-text">
+                <h1>Gerador de Nota Fiscal Eletrônica</h1>
+                <p>Preencha os campos abaixo para gerar a pré-visualização da sua fatura e o QR Code simulado.</p>
+            </div>
+        </div>
+
+        <div class="second-section">
+            <div class="form-and-illustration-wrapper">
+                
+                <div class="form-column">
+                    <div class="card">
+                        <div class="card-body p-4"> 
+                            <div class="label">DADOS DA FATURA</div>
+                            <h3 class="mb-4">Informações do Cliente e Serviço</h3> 
+                            
+                            <form id="invoiceForm" class="needs-validation" novalidate>
+                                
+                                <div class="mb-3">
+                                    <label for="clientName" class="form-label">Nome do Cliente</label>
+                                    <input type="text" class="form-control" id="clientName" required value="Maria Souza"> 
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="clientEmail" class="form-label">E-mail do Cliente</label>
+                                    <input type="email" class="form-control" id="clientEmail" required value="maria.souza@exemplo.com"> 
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="invoiceTotal" class="form-label">Valor Total (R$)</label>
+                                    <input type="number" class="form-control" id="invoiceTotal" required value="4500.00" step="0.01"> 
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="invoiceDescription" class="form-label">Descrição Breve</label>
+                                    <textarea class="form-control" id="invoiceDescription" rows="2" required>Desenvolvimento de Landing Page e Manutenção.</textarea> 
+                                </div>
+                                
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 15px;" id="generateBtn">
+                                    <i class="fas fa-sync-alt" style="margin-right: 10px;"></i>
+                                    Gerar/Atualizar Pré-Visualização
+                                </button>
+                                
+                                <button type="button" class="btn btn-success" style="width: 100%;" id="sendEmailBtn" disabled>
+                                    <i class="fas fa-paper-plane" style="margin-right: 10px;"></i>
+                                    Enviar Nota Fiscal por E-mail
+                                </button>
+                                
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="illustration-column">
+                    <div class="card p-4 h-100" id="invoicePreview">
+                        <div class="text-center text-muted" id="initialPreviewText">
+                            <i class="fas fa-file-invoice" style="font-size: 50px; margin-bottom: 15px;"></i>
+                            <h5>Pré-Visualização da Nota Fiscal</h5>
+                            <p>Preencha os dados ao lado e clique em "Gerar" para ver a pré-visualização da fatura e o QR Code aqui.</p>
+                        </div>
+                        
+                        <div id="generatedContent"></div> 
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+       
+    </div>
+    
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
